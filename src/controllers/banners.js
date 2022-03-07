@@ -15,9 +15,11 @@ const __dirname = path.dirname(__filename);
 const dir = path.join(__dirname, "");
 
 export const saveEvent = async (req, res) => {
-    const bannerDesktop = req.files.bannerDesktop;
-    const bannerTablet = req.files.bannerTablet;
-    const bannerMobile = req.files.bannerMobile;
+    const bannerDesktop = req.files?.bannerDesktop;
+    const bannerTablet = req.files?.bannerTablet;
+    const bannerMobile = req.files?.bannerMobile;
+    const dateEvent = req.body.date.substring(0,10)
+    const hourEvent = req.body.date.substring(11,16)
 
     const dimensionsDesktop =
         req.files?.bannerDesktop?.data && sizeOf(bannerDesktop.data);
@@ -45,11 +47,8 @@ export const saveEvent = async (req, res) => {
     if (req.body.name === "" || !req.body.name) {
         const { message } = handleErrors("name");
         return res.status(400).json({ message: message });
-    } else if (req.body.dateEvent === "" || !req.body.dateEvent) {
+    } else if (req.body.date === "" || !req.body.date) {
         const { message } = handleErrors("dateEvent");
-        return res.status(400).json({ message: message });
-    } else if (req.body.hourEvent === "" || !req.body.hourEvent) {
-        const { message } = handleErrors("hourEvent");
         return res.status(400).json({ message: message });
     } else if (req.body.urlTickets === "" || !req.body.urlTickets) {
         const { message } = handleErrors("urlTickets");
@@ -72,8 +71,8 @@ export const saveEvent = async (req, res) => {
 
         const objEvent = {
             name: req.body.name,
-            dateEvent: req.body.dateEvent,
-            hourEvent: req.body.hourEvent,
+            dateEvent: dateEvent,
+            hourEvent: hourEvent,
             urlTickets: req.body.urlTickets,
             bannerDesktop: `banners/${filenameDesktop}`,
             bannerTablet: `banners/${filenameTablet}`,
@@ -87,7 +86,8 @@ export const saveEvent = async (req, res) => {
         const eventSave = await event.save();
 
         return res.json({
-            eventSave,
+            message: "Event created successfully",
+            eventSave
         });
         } else {
         const { message } = handleErrors(devices["desktop"]);
@@ -101,12 +101,12 @@ export const saveEvent = async (req, res) => {
 };
 
 export const getEvents = async (req, res) => {
-  const { page = 1, limit = 10 } = req.query;
+  const { page = 1, limit = 20 } = req.query;
 
   try {
     const banners = await Banner.paginate({}, { limit, page });
     return res.json({
-      data: banners,
+      banners,
     });
   } catch (error) {
     const { message } = handleErrors("internServer");
@@ -149,6 +149,7 @@ export const updateEvent = async (req, res) => {
       );
 
       return res.json({
+        message: "Event updated successfully",
         banner,
       });
     } catch (error) {
@@ -229,6 +230,7 @@ export const updateImageDesktop = async (req, res) => {
               { new: true }
             );
             return res.json({
+              message: "Event updated successfully",
               banner,
             });
           } else {
@@ -285,6 +287,7 @@ export const updateImageTablet = async (req, res) => {
             { new: true }
           );
           return res.json({
+            message: "Event updated successfully",
             banner,
           });
         } else {
@@ -344,6 +347,7 @@ export const updateImageMobile = async (req, res) => {
               { new: true }
             );
             return res.json({
+              message: "Event updated successfully",
               banner,
             });
           } else {
