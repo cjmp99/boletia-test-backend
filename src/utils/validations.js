@@ -44,6 +44,7 @@ export const handleErrors = (type) => {
         deleteEventSuccess: "The event has been deleted successfully",
         deleteEventFail: "The images do not exist in the directory, the saved data will still be erased",
         deleteEventNoExists: "The images do not exist in the directory",
+        imageWeight: "The image must not weigh more than 800 kb"
     };
     const message = responses[type]
     return { message }

@@ -20,7 +20,7 @@ export const saveEvent = async (req, res) => {
     const bannerMobile = req.files?.bannerMobile;
     const dateEvent = req.body.date.substring(0,10)
     const hourEvent = req.body.date.substring(11,16)
-
+    
     const dimensionsDesktop =
         req.files?.bannerDesktop?.data && sizeOf(bannerDesktop.data);
     const dimensionsTablet =
@@ -62,7 +62,17 @@ export const saveEvent = async (req, res) => {
     } else if (!widthMobile) {
         const { message } = handleErrors(devices["mobile"]);
         return res.status(400).json({ message: message });
-    } else {
+
+    } else if (bannerDesktop?.size > 800000) {
+      const { message } = handleErrors(devices["imageWeight"]);
+      return res.status(400).json({ message: message });
+  } else if (bannerTablet?.size > 800000) {
+      const { message } = handleErrors(devices["imageWeight"]);
+      return res.status(400).json({ message: message });
+  } else if (bannerMobile > 800000) {
+      const { message } = handleErrors(devices["imageWeight"]);
+      return res.status(400).json({ message: message });
+  }else {
     try {
         if (bannerDesktop) {
         const filenameDesktop = uuidv4() + path.extname(bannerDesktop.name);
